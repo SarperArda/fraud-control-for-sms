@@ -1,6 +1,3 @@
-
----
-
 # Fraud Control for SMS
 
 Fraud Control for SMS is a project designed to detect fraudulent SMS messages using AI. It integrates with the Gemini AI model to analyze SMS content and provide fraud detection capabilities.
@@ -94,16 +91,6 @@ This will start the Fraud Control for SMS service. The application will analyze 
 
    The application will prompt you to enter an SMS message for analysis. Enter the message and press Enter.
 
-## Running Tests
-
-To run the tests, use the following command:
-
-```bash
-dotnet test
-```
-
-This will execute all the unit tests in the project.
-
 ## Contributing
 
 Contributions are welcome! If you would like to contribute to the project, please follow these steps:
@@ -113,5 +100,3 @@ Contributions are welcome! If you would like to contribute to the project, pleas
 3. Make your changes and commit them (`git commit -am 'Add new feature'`).
 4. Push to the branch (`git push origin feature-branch`).
 5. Create a new Pull Request.
-
----

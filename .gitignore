@@ -1,6 +1,27 @@
 # Ignore Visual Studio Code specific files
 .vscode/
 
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environment directories
+env/
+venv/
+ENV/
+VENV/
+.env/
+.venv/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore TensorFlow model files
+*.ckpt
+*.pb
+*.h5
+
 # Ignore build and object files
 bin/
 obj/
@@ -34,3 +55,57 @@ packages/
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
+
+# Ignore test and coverage reports
+coverage/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+*.pytest_cache/
+
+# Ignore distributions
+dist/
+build/
+*.egg-info/
+
+# Ignore IDE specific files
+.idea/
+
+# Ignore TensorBoard logs
+logs/
+tensorboard_logs/
+
+# Ignore large datasets
+data/
+datasets/
+
+# Ignore Python packaging files
+*.egg
+.Python
+eggs/
+parts/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Ignore pip env files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore mypy type checking reports
+.mypy_cache/
+
+# Ignore temporary files created by editors
+*.swp
+*.swo
+*~
+
+# Ignore backup files
+*.bak
+*.bkp
+*.tmp
