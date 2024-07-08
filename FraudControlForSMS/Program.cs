@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
+using DotNetEnv;
 
 public class GeminiAI{
     public string ExecutePythonScript(string prompt){
         try{
 
-            var pythonInterpreter = "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3";
-            var pythonScript = "/Users/sarperardabakir/Desktop/fraud-control-for-sms/FraudControlForSMS/gemini_api.py";
+            // Load environment variables from .env file
+            Env.Load();
+
+            var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
+            var pythonScript = Env.GetString("PYTHON_SCRIPT");
 
             var psi = new ProcessStartInfo(){
                 FileName = pythonInterpreter,
