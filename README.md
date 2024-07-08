@@ -1,4 +1,3 @@
-example readme:
 
 ---
 
@@ -14,7 +13,6 @@ Fraud Control for SMS is a project designed to detect fraudulent SMS messages us
 - [Usage](#usage)
 - [Running Tests](#running-tests)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Prerequisites
 
@@ -116,10 +114,4 @@ Contributions are welcome! If you would like to contribute to the project, pleas
 4. Push to the branch (`git push origin feature-branch`).
 5. Create a new Pull Request.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ---
-
-Feel free to modify the content as per your project's specifics or any additional information you might want to include!
