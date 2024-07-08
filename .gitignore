@@ -1,23 +1,36 @@
-# Ignore Python bytecode and cache files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Ignore environment variable files
-.env
-
-# Ignore VSCode settings and extensions
+# Ignore Visual Studio Code specific files
 .vscode/
-.vscode/*
+
+# Ignore build and object files
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.cache
+
+# Ignore logs and temporary files
+*.log
+*.vscode-test/
+
+# Ignore NuGet package directory
+packages/
+
+# Ignore .NET Core files
+*.dll
+*.pdb
+*.zip
+*.exe
+
+# Ignore Visual Studio files
+*.sln
+*.csproj.user
+*.vscode-csharp/
+
+# Ignore environment-specific files
+*.env
 
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
-
-# Ignore logs and temporary files
-*.log
-*.tmp
-
-# Ignore virtual environment directories
-venv/
-env/

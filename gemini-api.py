@@ -48,9 +48,13 @@ def generate_gemini_response(prompt):
     history=[
     ]
     )
+
     response = chat_session.send_message(prompt)
+
     return response
 
-# Test the function
-response = generate_gemini_response("What is the meaning of life?")
-print(response.text)
+if __name__ == "__main__":
+    import sys
+    prompt = sys.argv[1]
+    response = generate_gemini_response(prompt)
+    print(response.text)
