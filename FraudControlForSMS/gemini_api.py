@@ -55,6 +55,6 @@ def generate_gemini_response(prompt):
 
 if __name__ == "__main__":
     import sys
-    prompt = sys.argv[1]
+    prompt = sys.argv[1] + "Is this message spam or ham?"
     response = generate_gemini_response(prompt)
     print(response.text)
