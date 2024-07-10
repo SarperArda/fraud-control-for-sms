@@ -14,7 +14,7 @@ public class GeminiAI
             Env.Load();
 
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
-            var pythonScript = Env.GetString("PYTHON_SCRIPT");
+            var pythonScript = Env.GetString("GEMINI_SCRIPT");
 
             var psi = new ProcessStartInfo()
             {
@@ -115,7 +115,7 @@ class Program
         var geminiAI = new GeminiAI();
         var tensorFlowModel = new TensorFlowModel();
 
-        string[] input = new string[] { "my love today i will come to you." };
+        string[] input = new string[] {"ALERT: Your bank account has been suspended. Call us to verify: 123-456-7890"};
 
         var cts = new CancellationTokenSource();
 

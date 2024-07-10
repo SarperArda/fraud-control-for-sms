@@ -12,19 +12,23 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
 
-def train_sms_spam_model(input):
+def train_sms_spam_model(input_message):
     # Step 1: Data Collection and Preprocessing
     # Load dataset from CSV file
-    # Tiago Agostinho de Almeida and JosÈ MarÌa GÛmez Hidalgo hold the copyrigth (c) for the SMS Spam Collection v.1.
+    # Tiago Agostinho de Almeida and JosÈ MarÌa GÛmez Hidalgo hold the copyright (c) for the SMS Spam Collection v.1.
     # The dataset is available at https://archive.ics.uci.edu/dataset/228/sms+spam+collection 
     data = pd.read_csv('sms.csv', encoding='utf-8')
     data = data[['label', 'message']]
 
+    # Encode labels
+    label_encoder = LabelEncoder()
+    labels = label_encoder.fit_transform(data['label'].values)
+    
     # Text preprocessing
     texts = data['message'].values
-    labels = data['label'].values
 
     # Tokenization and padding
     tokenizer = Tokenizer(num_words=5000)
@@ -49,18 +53,24 @@ def train_sms_spam_model(input):
     # Step 3: Model Training
     model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
 
+    # Save the trained model
+    model.save('sms_spam_model.h5')
+
     # Step 4: Model Evaluation
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
     print(classification_report(y_test, y_pred))
 
     # Step 5: Example Prediction
-    new_seq = tokenizer.texts_to_sequences(input)
+    new_seq = tokenizer.texts_to_sequences([input_message])
     new_padded_seq = pad_sequences(new_seq, maxlen=100)
     prediction = model.predict(new_padded_seq)
 
-    print("Spam Probability:", prediction)
+    print("Spam Probability:", prediction[0][0])
 
 if __name__ == "__main__":
     import sys
-    input = sys.argv[1]
-    train_sms_spam_model(input)
+    if len(sys.argv) > 1:
+        input_message = sys.argv[1]
+        train_sms_spam_model(input_message)
+    else:
+        print("Please provide an input message for prediction.")
