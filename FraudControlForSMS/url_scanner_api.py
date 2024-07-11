@@ -16,10 +16,8 @@ class IPQS:
         return json.loads(x.text)
 
 if __name__ == "__main__":
-    """
-    URL to scan - URL Encoded in cURL function below.
-    """
-    URL = 'https://f1store.formula1.com/en/'
+    import sys
+    URL = sys.argv[1] 
 
     strictness = 0
     timeout = 5
