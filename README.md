@@ -1,6 +1,6 @@
 # Fraud Control for SMS
 
-Fraud Control for SMS is a project designed to detect fraudulent SMS messages using AI. It integrates with the Gemini AI model to analyze SMS content and provide fraud detection capabilities.
+Fraud Control for SMS is a project designed to detect fraudulent SMS messages using AI. It integrates with the Gemini AI model, TensorFlow model, and IPQS API to analyze SMS content and provide fraud detection capabilities.
 
 ## Table of Contents
 
@@ -8,7 +8,6 @@ Fraud Control for SMS is a project designed to detect fraudulent SMS messages us
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Running Tests](#running-tests)
 - [Contributing](#contributing)
 
 ## Prerequisites
@@ -46,26 +45,23 @@ dotnet restore
    Ensure you have Python and pip installed. Then, install the required Python packages:
 
    ```bash
-   pip install google-cloud-generativai python-dotenv
-   ```
-
-2. **Create a `.env` File**
-
-   In the root directory of your project, create a `.env` file and add your API key:
-
-   ```env
-   GEMINI_API_KEY=your_api_key_here
+   pip install google-cloud-generativai python-dotenv requests pandas tensorflow
    ```
 
 ## Configuration
 
-### Update Python Path in C#
+### Create a `.env` File
 
-Ensure the Python path in `Program.cs` is correct. Update the `FileName` property in the `ProcessStartInfo` to point to your Python executable. For example:
+   In the root directory of your project, create a `.env` file. Obtain API keys individually from https://ai.google.dev and https://www.ipqualityscore.com/documentation/overview:
 
-```csharp
-start.FileName = "/usr/bin/python3"; // Update this path to your Python executable path
-```
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   IP_QUALITY_SCORE_API_KEY=your_ip_quality_score_api_key_here
+   PYTHON_INTERPRETER=path_to_your_python_executable
+   GEMINI_SCRIPT=path_to_your_gemini_script
+   TENSORFLOW_SCRIPT=path_to_your_tensorflow_script
+   IPQS_SCRIPT=path_to_your_ipqs_script
+   ```
 
 ## Usage
 
@@ -75,7 +71,7 @@ To run the application, use the following command:
 dotnet run
 ```
 
-This will start the Fraud Control for SMS service. The application will analyze SMS content and detect potential fraud using the Gemini AI model.
+This will start the Fraud Control for SMS service. The application will analyze SMS content and detect potential fraud using the Gemini AI model, TensorFlow model, and IPQS API.
 
 ### Example Usage
 
@@ -89,7 +85,25 @@ This will start the Fraud Control for SMS service. The application will analyze 
 
 2. **Send a Prompt**
 
-   The application will prompt you to enter an SMS message for analysis. Enter the message and press Enter.
+   The application will analyze a predefined SMS message for fraud risk by utilizing the Gemini AI model, TensorFlow model, and IPQS API. The results will provide a comprehensive assessment of the message's risk level.
+
+## Detailed Explanation of the Program
+
+### Gemini AI Model
+
+The Gemini AI model is a generative AI model that analyzes the content of SMS messages to detect any suspicious or spam-like patterns. It provides a fraud probability score based on the input message content.
+
+### TensorFlow Model
+
+The TensorFlow model is a machine learning model trained on a dataset of SMS messages. It evaluates the likelihood of the message being spam based on its content and provides a spam probability score.
+
+### IPQS API
+
+The IPQS (IP Quality Score) API assesses URLs included in the SMS message for potential phishing, malware, or other fraudulent activities. It provides a fraud probability score based on the URL analysis.
+
+### Combined Fraud Detection
+
+The program combines the scores from the Gemini AI model, TensorFlow model, and IPQS API to generate a final fraud risk score. The final score is a weighted average of the individual scores, providing a comprehensive analysis of the SMS message's risk level.
 
 ## Contributing
 
