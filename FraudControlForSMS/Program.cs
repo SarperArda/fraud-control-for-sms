@@ -32,6 +32,8 @@ public class GeminiAI
 
             using (var process = Process.Start(psi))
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
                 {
                     // Read the output
@@ -58,12 +60,15 @@ public class GeminiAI
                     {
                         // Extract the matched group and convert to float
                         float fraudProbability = float.Parse(match.Groups[0].Value);
+                        stopwatch.Stop();
+                         Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return fraudProbability;
                     }
                     else
                     {
-                        // No match found, return -1
-                        return -1.0f;
+                        stopwatch.Stop();
+                        Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
+                        return 0.0f;
                     }
                 }
             }
@@ -99,6 +104,8 @@ public class TensorFlowModel
 
             using (var process = Process.Start(psi))
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
                 {
                     // Read the output
@@ -129,6 +136,8 @@ public class TensorFlowModel
                     float probability;
                     if (float.TryParse(spamLine.Split(':')[1].Trim(), out probability))
                     {
+                        stopwatch.Stop();
+                        Console.WriteLine("Total Execution Time of TensorFlow API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return probability;
                     }
                     else
@@ -167,6 +176,8 @@ class IPQS{
 
             using (var process = Process.Start(psi))
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
                 {
                     // Read the output
@@ -193,11 +204,15 @@ class IPQS{
                     {
                         // Extract the matched group and convert to float
                         float fraudProbability = float.Parse(match.Groups[0].Value);
+                        stopwatch.Stop();
+                        Console.WriteLine("Total Execution Time of IPQS API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return fraudProbability;
                     }
                     else
                     {
                         // No match found, return -1
+                        stopwatch.Stop();
+                        Console.WriteLine("Total Execution Time of IPQS API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return 0.0f;
                     }
                 }
@@ -218,7 +233,7 @@ class Program
         var tensorFlowModel = new TensorFlowModel();
         var ipqs = new IPQS();
 
-        string[] input = new string[] {"ALERT: Your bank account has been suspended. Call us to verify: 123-456-7890 and click https://pegasus.com"};
+        string[] input = new string[] {"This is your fly ticket https://flypgs.com"};
 
         var cts = new CancellationTokenSource();
         var stopwatch = new Stopwatch();

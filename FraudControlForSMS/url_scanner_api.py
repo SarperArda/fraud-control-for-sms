@@ -33,18 +33,15 @@ if __name__ == "__main__":
 
     if 'success' in result and result['success'] == True:
         if result['suspicious'] == True or result['phishing'] == True or result['malware'] == True or result['risk_score'] > 75 or result['parking'] == True:
-            if result['risk_score'] != 0:
+            if result['risk_score'] > 0:
                 print("risk score: ", result['risk_score'])
             print("fraud website by 60")
 
         else:
             ip_address = result['ip_address']
-            result = check_ip_fraud(ip_address)
-            if result:
-                if result['fraud_score'] != 0:
-                    print("fraud score: ", result['fraud_score'])
-                else:
-                    print("fraud score: 60")
+            fraud_score = check_ip_fraud(ip_address)
+            if result != 0:
+                print("fraud score: ", fraud_score)
             else:
                 print("legitimate website")    
     else:

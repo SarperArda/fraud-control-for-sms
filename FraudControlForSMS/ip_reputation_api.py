@@ -40,11 +40,14 @@ def check_ip_fraud(ip_address: str):
 
     if 'success' in result and result['success'] == True:
         if result['proxy'] == True or result['fraud_score'] >= 60:
-            return True
+            if result['fraud_score'] != 0:
+                return result['fraud_score']
+            else:
+                return 60
         else:
-            return False
+            return 0
     else:
-        return False
+        return 0
 
 '''
 if __name__ == "__main__":
