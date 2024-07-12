@@ -52,12 +52,6 @@ def generate_gemini_response(prompt):
         response = chat_session.send_message(prompt)
         return response
 
-    except StopCandidateException as e:
-        # Handle safety constraints
-        safety_ratings = e.safety_ratings
-        safety_details = "\n".join([f"{rating.category}: {rating.probability}" for rating in safety_ratings])
-        return f"Error: Safety constraints triggered with details:\n{safety_details}"
-
     except Exception as e:
         return f"An unexpected error occurred: {str(e)}"
 

@@ -1,10 +1,12 @@
 """
-    Description: This script is used to train a machine learning model for SMS spam detection.
-    Author: Sarper Arda BAKIR
-    Date: 09-07-2024
-    Version: 1.0
+Description: This script is used to train a machine learning model for SMS spam detection.
+Author: Sarper Arda BAKIR
+Date: 09-07-2024
+Version: 1.0
 """
 
+import os
+import sys
 import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -13,13 +15,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import classification_report
 
-def train_sms_spam_model(input_message):
+def train_sms_spam_model():
     # Step 1: Data Collection and Preprocessing
     # Load dataset from CSV file
-    # Tiago Agostinho de Almeida and JosÈ MarÌa GÛmez Hidalgo hold the copyright (c) for the SMS Spam Collection v.1.
-    # The dataset is available at https://archive.ics.uci.edu/dataset/228/sms+spam+collection 
     data = pd.read_csv('sms.csv', encoding='utf-8')
     data = data[['label', 'message']]
 
@@ -51,26 +50,38 @@ def train_sms_spam_model(input_message):
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     # Step 3: Model Training
-    model.fit(X_train, y_train, epochs=5, batch_size=64, validation_split=0.2)
+    model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
 
     # Save the trained model
     model.save('sms_spam_model.h5')
 
-    # Step 4: Model Evaluation
-    y_pred = (model.predict(X_test) > 0.5).astype("int32")
+def predict_sms_spam(input_message):
+    # Check if the model file exists
+    if os.path.exists('sms_spam_model.h5'):
+        # Load the trained model
+        model = tf.keras.models.load_model('sms_spam_model.h5')
 
-    # Step 5: Example Prediction
-    new_seq = tokenizer.texts_to_sequences([input_message])
-    new_padded_seq = pad_sequences(new_seq, maxlen=100)
-    prediction = model.predict(new_padded_seq)
+        # Tokenize and pad the input message
+        tokenizer = Tokenizer(num_words=5000)
+        tokenizer.fit_on_texts([input_message])
+        sequence = tokenizer.texts_to_sequences([input_message])
+        padded_sequence = pad_sequences(sequence, maxlen=100)
 
-    # Print the prediction
-    print("Spam Probability:", prediction[0][0])
+        # Make predictions
+        prediction = model.predict(padded_sequence)[0][0]
+
+        # Return the prediction
+        return prediction
+    else:
+        print("Model file 'sms_spam_model.h5' not found. Training the model first.")
+        train_sms_spam_model()  # Train the model if it doesn't exist
+        predict_sms_spam(input_message)  # Predict again after training
 
 if __name__ == "__main__":
-    import sys
     if len(sys.argv) > 1:
         input_message = sys.argv[1]
-        train_sms_spam_model(input_message)
+        prediction = predict_sms_spam(input_message)
+        if prediction is not None:
+            print(f"Spam Probability: {prediction}")
     else:
         print("Please provide an input message for prediction.")
