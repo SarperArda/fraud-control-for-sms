@@ -1,52 +1,77 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using CsvHelper;
 
 class Program
 {
     static async Task Main(string[] args)
     {
-        
         var geminiAI = new GeminiAI();
         var tensorFlowModel = new TensorFlowModel();
         var ipqs = new IPQS();
 
-        string[] input = new string[] {"This is your fly ticket https://flypgs.com"};
+        string inputFilePath = "input.csv"; // Change to your input file path
+        string outputFilePath = "output.csv"; // Change to your desired output file path
 
         var cts = new CancellationTokenSource();
         var stopwatch = new Stopwatch();
 
-        var geminiTask = geminiAI.ExecutePythonScriptAsync(input, cts.Token);
-        var tensorFlowTask = tensorFlowModel.PredictAsync(input, cts.Token);
-
-        string smsContent = input[0];
-        var urlMatch = Regex.Match(smsContent, @"http[s]?://\S+");
-
-        Task<float> ipqsTask = null;
-        if (urlMatch.Success)
-        {
-            string url = urlMatch.Value;
-            ipqsTask = ipqs.CheckURL(new string[] { url }, cts.Token);
-        }
         try
         {
+            var records = ReadCsv(inputFilePath);
+            var results = new List<OutputRecord>();
+
             stopwatch.Start();
-            if (ipqsTask != null)
+            foreach (var record in records)
             {
-                await Task.WhenAll(geminiTask, tensorFlowTask, ipqsTask);
-            }
-            else
-            {
-                await Task.WhenAll(geminiTask, tensorFlowTask);
+                string smsContent = record.Message;
+                var geminiTask = geminiAI.ExecutePythonScriptAsync(new string[] { smsContent }, cts.Token);
+                var tensorFlowTask = tensorFlowModel.PredictAsync(new string[] { smsContent }, cts.Token);
+
+                var urlMatch = Regex.Match(smsContent, @"http[s]?://\S+");
+                Task<float> ipqsTask = null;
+                if (urlMatch.Success)
+                {
+                    string url = urlMatch.Value;
+                    ipqsTask = ipqs.CheckURL(new string[] { url }, cts.Token);
+                }
+
+                if (ipqsTask != null)
+                {
+                    await Task.WhenAll(geminiTask, tensorFlowTask, ipqsTask);
+                }
+                else
+                {
+                    await Task.WhenAll(geminiTask, tensorFlowTask);
+                }
+
+                float geminiScore = await geminiTask;
+                float tensorFlowScore = await tensorFlowTask * 100;
+                float ipqsScore = ipqsTask != null ? await ipqsTask : 0;
+
+                int finalScore = CalculateFinalScore(geminiScore, tensorFlowScore, ipqsScore);
+                string explanation = GenerateExplanation(geminiScore, tensorFlowScore, ipqsScore, finalScore);
+
+                results.Add(new OutputRecord
+                {
+                    Message = smsContent,
+                    GeminiScore = geminiScore,
+                    TensorFlowScore = tensorFlowScore,
+                    IPQSScore = ipqsScore,
+                    FinalScore = finalScore,
+                    Explanation = explanation
+                });
             }
             stopwatch.Stop();
+
+            WriteCsv(outputFilePath, results);
             Console.WriteLine("Total Execution Time: {0} ms", stopwatch.ElapsedMilliseconds);
-
-            float geminiScore = await geminiTask;
-            float tensorFlowScore = await tensorFlowTask * 100;
-            float ipqsScore = ipqsTask != null ? await ipqsTask : 0;
-
-            int finalScore = CalculateFinalScore(geminiScore, tensorFlowScore, ipqsScore);
-            Console.WriteLine($"Explanation: {GenerateExplanation(geminiScore, tensorFlowScore, ipqsScore, finalScore)}");
         }
         catch (Exception ex)
         {
@@ -92,4 +117,17 @@ class Program
             $"Each of these components contributes to the overall assessment, providing a comprehensive analysis of the message's risk level. A higher final score suggests a greater likelihood of the SMS being spam or fraudulent.";
     }
 
+    static List<InputRecord> ReadCsv(string filePath)
+    {
+        using var reader = new StreamReader(filePath);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        return csv.GetRecords<InputRecord>().ToList();
+    }
+
+    static void WriteCsv(string filePath, IEnumerable<OutputRecord> records)
+    {
+        using var writer = new StreamWriter(filePath);
+        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        csv.WriteRecords(records);
+    }
 }
