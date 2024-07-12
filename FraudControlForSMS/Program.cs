@@ -77,7 +77,7 @@ public class GeminiAI
 
 public class TensorFlowModel
 {
-    public async Task<string> PredictAsync(string[] input, CancellationToken cancellationToken)
+    public async Task<float> PredictAsync(string[] input, CancellationToken cancellationToken)
     {
         try
         {
@@ -116,7 +116,25 @@ public class TensorFlowModel
                     }
 
                     var output = await outputTask;
-                    return output.Trim();
+                    var lines = output.Trim().Split(Environment.NewLine); // Split by new line characters
+
+                    // Find the line containing "Spam Probability"
+                    string spamLine = lines.FirstOrDefault(line => line.StartsWith("Spam Probability:"));
+
+                    if (spamLine == null)
+                    {
+                        throw new Exception("Could not find 'Spam Probability' in model output.");
+                    }
+
+                    float probability;
+                    if (float.TryParse(spamLine.Split(':')[1].Trim(), out probability))
+                    {
+                        return probability;
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to parse spam probability value.");
+                    }
                 }
             }
         }
@@ -217,7 +235,8 @@ class Program
             Console.WriteLine(Result);
 
             Console.WriteLine("TensorFlow Model Result:");
-            Console.WriteLine(await tensorFlowTask);
+            float ResultTF = await tensorFlowTask;
+            Console.WriteLine(Result);
 
             if (ipqsTask != null)
             {

@@ -58,7 +58,6 @@ def train_sms_spam_model(input_message):
 
     # Step 4: Model Evaluation
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
-    print(classification_report(y_test, y_pred))
 
     # Step 5: Example Prediction
     new_seq = tokenizer.texts_to_sequences([input_message])
