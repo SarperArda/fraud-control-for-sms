@@ -2,7 +2,7 @@
     Description: This script is used to interact with the Gemini API.
     Author: Sarper Arda BAKIR
     Date: 08-07-2024
-    Version: 1.0
+    Version: 1.1
 """
 
 # Import the required libraries
@@ -53,7 +53,10 @@ def generate_gemini_response(prompt):
         return response
 
     except StopCandidateException as e:
-        return f"Error: Safety constraints triggered with reason: {e.finish_reason}"
+        # Handle safety constraints
+        safety_ratings = e.safety_ratings
+        safety_details = "\n".join([f"{rating.category}: {rating.probability}" for rating in safety_ratings])
+        return f"Error: Safety constraints triggered with details:\n{safety_details}"
 
     except Exception as e:
         return f"An unexpected error occurred: {str(e)}"

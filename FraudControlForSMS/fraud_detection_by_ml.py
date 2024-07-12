@@ -64,6 +64,7 @@ def train_sms_spam_model(input_message):
     new_padded_seq = pad_sequences(new_seq, maxlen=100)
     prediction = model.predict(new_padded_seq)
 
+    # Print the prediction
     print("Spam Probability:", prediction[0][0])
 
 if __name__ == "__main__":
