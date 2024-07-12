@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -31,10 +32,10 @@ class Program
         {
             var records = ReadCsv(inputFilePath);
             var uniqueRecords = FilterDuplicateMessages(records);
-            var results = new List<OutputRecord>();
+            var results = new ConcurrentBag<OutputRecord>();
 
             stopwatch.Start();
-            foreach (var record in uniqueRecords)
+            var tasks = uniqueRecords.Select(async record =>
             {
                 string smsContent = record.Message;
                 var geminiTask = geminiAI.ExecutePythonScriptAsync(new string[] { smsContent }, cts.Token);
@@ -73,10 +74,12 @@ class Program
                     FinalScore = finalScore,
                     Explanation = explanation
                 });
-            }
+            }).ToArray();
+
+            await Task.WhenAll(tasks);
             stopwatch.Stop();
 
-            WriteCsv(outputFilePath, results);
+            WriteCsv(outputFilePath, results.OrderBy(r => r.Message));
             Console.WriteLine("Total Execution Time: {0} ms", stopwatch.ElapsedMilliseconds);
         }
         catch (Exception ex)
