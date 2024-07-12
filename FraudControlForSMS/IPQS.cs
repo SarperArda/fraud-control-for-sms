@@ -62,7 +62,7 @@ class IPQS{
                         // No match found, return -1
                         stopwatch.Stop();
                         Console.WriteLine("Total Execution Time of IPQS API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return 0.0f;
+                        return -1f;
                     }
                 }
             }

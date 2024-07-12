@@ -60,7 +60,7 @@ class Program
 
                 float geminiScore = await geminiTask;
                 float tensorFlowScore = await tensorFlowTask * 100;
-                float ipqsScore = ipqsTask != null ? await ipqsTask : 0;
+                float ipqsScore = ipqsTask != null ? await ipqsTask : -1;
 
                 int finalScore = CalculateFinalScore(geminiScore, tensorFlowScore, ipqsScore);
                 string explanation = GenerateExplanation(geminiScore, tensorFlowScore, ipqsScore, finalScore);
@@ -94,7 +94,17 @@ class Program
 
     static int CalculateFinalScore(float geminiScore, float tensorFlowScore, float ipqsScore)
     {
-        // Example weighted average
+        if(ipqsScore == -1){
+            return (int)((geminiScore * 0.5) + (tensorFlowScore * 0.5));
+        }
+        if (geminiScore < 0 || tensorFlowScore < 0)
+        {
+            throw new ArgumentException("Scores cannot be negative.");
+        }
+        if (geminiScore > 100 || tensorFlowScore > 100 || ipqsScore > 100)
+        {
+            throw new ArgumentException("Scores cannot exceed the maximum value.");
+        }
         return (int)((geminiScore * 0.4) + (tensorFlowScore * 0.4) + (ipqsScore * 0.2));
     }
 
@@ -115,15 +125,7 @@ class Program
             riskLevel = "low";
         }
 
-        return $"The final fraud/spam risk score is {finalScore}, which indicates a {riskLevel} risk level.\n" +
-            $"This score is derived from the combined results of three different detection mechanisms:\n\n" +
-            $"- GeminiAI Score: {geminiScore}\n" +
-            $"  GeminiAI is a generative AI model that analyzes the content of the message to detect any suspicious or spam-like patterns.\n\n" +
-            $"- TensorFlow Model Score: {tensorFlowScore}\n" +
-            $"  This score is produced by a machine learning model trained on a dataset of SMS messages. It evaluates the likelihood of the message being spam based on its content.\n\n" +
-            $"- IPQS Check Score: {ipqsScore}\n" +
-            $"  IPQS (IP Quality Score) assesses the URL included in the message (if any) for potential phishing, malware, or other fraudulent activities.\n\n" +
-            $"Each of these components contributes to the overall assessment, providing a comprehensive analysis of the message's risk level. A higher final score suggests a greater likelihood of the SMS being spam or fraudulent.";
+        return $"The final fraud/spam risk score is {finalScore}, which indicates a {riskLevel} risk level.";
     }
 
     static List<InputRecord> ReadCsv(string filePath)
