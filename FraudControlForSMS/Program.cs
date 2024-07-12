@@ -3,21 +3,26 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CsvHelper;
+using DotNetEnv;
 
 class Program
 {
     static async Task Main(string[] args)
     {
+        // Load environment variables from .env file
+        Env.Load();
+
         var geminiAI = new GeminiAI();
         var tensorFlowModel = new TensorFlowModel();
         var ipqs = new IPQS();
 
-        string inputFilePath = "input.csv"; // Change to your input file path
-        string outputFilePath = "output.csv"; // Change to your desired output file path
+        string inputFilePath = Env.GetString("INPUT_FILE");
+        string outputFilePath = Env.GetString("OUTPUT_FILE");
 
         var cts = new CancellationTokenSource();
         var stopwatch = new Stopwatch();
@@ -25,10 +30,11 @@ class Program
         try
         {
             var records = ReadCsv(inputFilePath);
+            var uniqueRecords = FilterDuplicateMessages(records);
             var results = new List<OutputRecord>();
 
             stopwatch.Start();
-            foreach (var record in records)
+            foreach (var record in uniqueRecords)
             {
                 string smsContent = record.Message;
                 var geminiTask = geminiAI.ExecutePythonScriptAsync(new string[] { smsContent }, cts.Token);
@@ -122,6 +128,22 @@ class Program
         using var reader = new StreamReader(filePath);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         return csv.GetRecords<InputRecord>().ToList();
+    }
+
+    static List<InputRecord> FilterDuplicateMessages(List<InputRecord> records)
+    {
+        var uniqueMessages = new HashSet<string>();
+        var uniqueRecords = new List<InputRecord>();
+
+        foreach (var record in records)
+        {
+            if (uniqueMessages.Add(record.Message))
+            {
+                uniqueRecords.Add(record);
+            }
+        }
+
+        return uniqueRecords;
     }
 
     static void WriteCsv(string filePath, IEnumerable<OutputRecord> records)
