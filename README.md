@@ -48,7 +48,9 @@ dotnet restore
    pip install google-cloud-generativai python-dotenv requests pandas tensorflow
    ```
 
-2. **Create a `.env` File**
+## Configuration
+
+### Create a `.env` File
 
    In the root directory of your project, create a `.env` file. Obtain API keys individually from https://ai.google.dev and https://www.ipqualityscore.com/documentation/overview:
 
@@ -60,16 +62,6 @@ dotnet restore
    TENSORFLOW_SCRIPT=path_to_your_tensorflow_script
    IPQS_SCRIPT=path_to_your_ipqs_script
    ```
-
-## Configuration
-
-### Update Python Path in C#
-
-Ensure the Python path in `Program.cs` is correct. Update the `FileName` property in the `ProcessStartInfo` to point to your Python executable. For example:
-
-```csharp
-start.FileName = "/usr/bin/python3"; // Update this path to your Python executable path
-```
 
 ## Usage
 
