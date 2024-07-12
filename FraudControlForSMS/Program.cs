@@ -3,11 +3,14 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using DotNetEnv;
+using Sprache;
+
 
 public class GeminiAI
 {
-    public async Task<string> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
+    public async Task<float> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
     {
         try
         {
@@ -46,7 +49,22 @@ public class GeminiAI
                     }
 
                     var output = await outputTask;
-                    return output.Trim();
+                    output = output.Trim();
+
+                    // Use Regex to search for digits (0-9) and optional decimal point
+                    Match match = Regex.Match(output, @"\d+\.?\d*");
+
+                    if (match.Success)
+                    {
+                        // Extract the matched group and convert to float
+                        float fraudProbability = float.Parse(match.Groups[0].Value);
+                        return fraudProbability;
+                    }
+                    else
+                    {
+                        // No match found, return -1
+                        return -1.0f;
+                    }
                 }
             }
         }
@@ -195,7 +213,8 @@ class Program
 
             await Task.WhenAll(geminiTask, tensorFlowTask);
             Console.WriteLine("GeminiAI Result:");
-            Console.WriteLine(await geminiTask);
+            float Result = await geminiTask;
+            Console.WriteLine(Result);
 
             Console.WriteLine("TensorFlow Model Result:");
             Console.WriteLine(await tensorFlowTask);

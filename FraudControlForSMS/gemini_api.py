@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from google.generativeai.types.generation_types import StopCandidateException
 
-
 # Load the environment variables from the .env file
 load_dotenv()
 
@@ -54,9 +53,15 @@ def generate_gemini_response(prompt):
         return response
 
     except StopCandidateException as e:
-        return f"Error: Safety constraints triggered with reason: {e.response.finish_reason}"
+        return f"Error: Safety constraints triggered with reason: {e.finish_reason}"
+
+    except Exception as e:
+        return f"An unexpected error occurred: {str(e)}"
 
 if __name__ == "__main__":
-    prompt = sys.argv[1] + " Is this message spam or ham?"
-    response = generate_gemini_response(prompt)
-    print(response if isinstance(response, str) else response.text)
+    if len(sys.argv) > 1:
+        prompt = sys.argv[1] + " Is this message fraud? Write only percentage of fraud."
+        response = generate_gemini_response(prompt)
+        print(response if isinstance(response, str) else response.text)
+    else:
+        print("Prompt is not provided. Please provide a prompt as an argument.")
