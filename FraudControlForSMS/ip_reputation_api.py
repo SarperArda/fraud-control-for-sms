@@ -22,7 +22,18 @@ class IPQS:
 
         url = "https://www.ipqualityscore.com/api/json/ip/%s/%s" % (self.key, ip)
         response = requests.get(url, params=params)
-        return json.loads(response.text)
+
+        # Print the response text for debugging
+        print("Response text:", response.text)
+        
+        # Print status code
+        print("Status code:", response.status_code)
+
+        try:
+            return json.loads(response.text)
+        except json.JSONDecodeError:
+            print("Failed to decode JSON")
+            return {}
 
 def check_ip_fraud(ip_address: str):
     ipqs = IPQS()
@@ -49,10 +60,8 @@ def check_ip_fraud(ip_address: str):
     else:
         return 0
 
-'''
 if __name__ == "__main__":
     # IP address to check
     ip_address = '99.86.4.119'
     result = check_ip_fraud(ip_address)
     print(result)
-'''
