@@ -62,6 +62,18 @@ class Program
                 float tensorFlowScore = await tensorFlowTask * 100;
                 float ipqsScore = ipqsTask != null ? await ipqsTask : -1;
 
+                if (geminiScore < 0 || tensorFlowScore < 0)
+                {
+                    geminiScore = Math.Max(geminiScore, 0);
+                    tensorFlowScore = Math.Max(tensorFlowScore, 0);
+                }
+                if (geminiScore > 100 || tensorFlowScore > 100 || ipqsScore > 100)
+                {
+                    geminiScore = Math.Min(geminiScore, 100);
+                    tensorFlowScore = Math.Min(tensorFlowScore, 100);
+                    ipqsScore = Math.Min(ipqsScore, 100);
+                }
+
                 int finalScore = CalculateFinalScore(geminiScore, tensorFlowScore, ipqsScore);
                 string explanation = GenerateExplanation(geminiScore, tensorFlowScore, ipqsScore, finalScore);
 
@@ -96,14 +108,6 @@ class Program
     {
         if(ipqsScore == -1){
             return (int)((geminiScore * 0.5) + (tensorFlowScore * 0.5));
-        }
-        if (geminiScore < 0 || tensorFlowScore < 0)
-        {
-            throw new ArgumentException("Scores cannot be negative.");
-        }
-        if (geminiScore > 100 || tensorFlowScore > 100 || ipqsScore > 100)
-        {
-            throw new ArgumentException("Scores cannot exceed the maximum value.");
         }
         return (int)((geminiScore * 0.4) + (tensorFlowScore * 0.4) + (ipqsScore * 0.2));
     }
