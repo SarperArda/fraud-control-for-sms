@@ -80,12 +80,9 @@ This will start the Fraud Control for SMS service. The application will analyze 
    Navigate to the project directory and run:
 
    ```bash
+   cd FraudControlForSMS
    dotnet run
    ```
-
-2. **Send a Prompt**
-
-   The application will analyze a predefined SMS message for fraud risk by utilizing the Gemini AI model, TensorFlow model, and IPQS API. The results will provide a comprehensive assessment of the message's risk level.
 
 ## Detailed Explanation of the Program
 
