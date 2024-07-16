@@ -109,3 +109,6 @@ pip-delete-this-directory.txt
 *.bak
 *.bkp
 *.tmp
+
+# Ignore the tokenizer file
+tokenizer.pickle

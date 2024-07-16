@@ -47,7 +47,7 @@ public class TensorFlowModel
                     var lines = output.Trim().Split(Environment.NewLine); // Split by new line characters
 
                     // Find the line containing "Spam Probability"
-                    string spamLine = lines.FirstOrDefault(line => line.StartsWith("Spam Probability:"));
+                    string spamLine = lines.FirstOrDefault(line => line.StartsWith("Spam Probability: "));
 
                     if (spamLine == null)
                     {
