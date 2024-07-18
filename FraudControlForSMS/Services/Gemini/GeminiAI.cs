@@ -2,8 +2,9 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DotNetEnv;
 
-class IPQS{
-    public async Task<float> CheckURL(string[] input, CancellationToken cancellationToken)
+public class GeminiAI
+{
+    public async Task<float> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
     {
         try
         {
@@ -11,7 +12,12 @@ class IPQS{
             Env.Load();
 
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
-            var pythonScript = Env.GetString("IPQS_SCRIPT");
+            var pythonScript = Env.GetString("GEMINI_SCRIPT");
+
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or Gemini script are not set.");
+            }
 
             var psi = new ProcessStartInfo()
             {
@@ -25,6 +31,11 @@ class IPQS{
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
@@ -54,15 +65,14 @@ class IPQS{
                         // Extract the matched group and convert to float
                         float fraudProbability = float.Parse(match.Groups[0].Value);
                         stopwatch.Stop();
-                        Console.WriteLine("Total Execution Time of IPQS API: {0} ms", stopwatch.ElapsedMilliseconds);
+                         Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return fraudProbability;
                     }
                     else
                     {
-                        // No match found, return -1
                         stopwatch.Stop();
-                        Console.WriteLine("Total Execution Time of IPQS API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return -1f;
+                        Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
+                        return 0.0f;
                     }
                 }
             }

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DotNetEnv;
 
-public class GeminiAI
+public class OpenAI
 {
     public async Task<float> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
     {
@@ -12,7 +12,12 @@ public class GeminiAI
             Env.Load();
 
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
-            var pythonScript = Env.GetString("GEMINI_SCRIPT");
+            var pythonScript = Env.GetString("OPENAI_SCRIPT");
+
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or OpenAI script are not set.");
+            }
 
             var psi = new ProcessStartInfo()
             {
@@ -26,6 +31,11 @@ public class GeminiAI
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
@@ -55,13 +65,13 @@ public class GeminiAI
                         // Extract the matched group and convert to float
                         float fraudProbability = float.Parse(match.Groups[0].Value);
                         stopwatch.Stop();
-                         Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
+                        Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return fraudProbability;
                     }
                     else
                     {
                         stopwatch.Stop();
-                        Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
+                        Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return 0.0f;
                     }
                 }
