@@ -83,6 +83,8 @@ def predict_sms_spam(input_message):
 if __name__ == "__main__":
     # Train the SMS spam detection model
     #train_sms_spam_model()
+    if not os.path.exists('sms_spam_model.h5') and not os.path.exists('tokenizer.pickle'):
+        train_sms_spam_model()
     if len(sys.argv) > 1:
         input_message = sys.argv[1]
         prediction = predict_sms_spam(input_message)
