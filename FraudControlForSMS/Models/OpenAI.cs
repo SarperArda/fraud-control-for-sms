@@ -14,6 +14,11 @@ public class OpenAI
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
             var pythonScript = Env.GetString("OPENAI_SCRIPT");
 
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or OpenAI script are not set.");
+            }
+
             var psi = new ProcessStartInfo()
             {
                 FileName = pythonInterpreter,
@@ -26,6 +31,11 @@ public class OpenAI
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
@@ -55,7 +65,7 @@ public class OpenAI
                         // Extract the matched group and convert to float
                         float fraudProbability = float.Parse(match.Groups[0].Value);
                         stopwatch.Stop();
-                         Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
+                        Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
                         return fraudProbability;
                     }
                     else

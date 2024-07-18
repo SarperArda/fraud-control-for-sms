@@ -2,7 +2,8 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DotNetEnv;
 
-class IPQS{
+public class IPQS
+{
     public async Task<float> CheckURL(string[] input, CancellationToken cancellationToken)
     {
         try
@@ -12,6 +13,11 @@ class IPQS{
 
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
             var pythonScript = Env.GetString("IPQS_SCRIPT");
+
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or IPQS script are not set.");
+            }
 
             var psi = new ProcessStartInfo()
             {
@@ -25,6 +31,11 @@ class IPQS{
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))

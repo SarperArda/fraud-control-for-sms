@@ -14,6 +14,11 @@ public class GeminiAI
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
             var pythonScript = Env.GetString("GEMINI_SCRIPT");
 
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or Gemini script are not set.");
+            }
+
             var psi = new ProcessStartInfo()
             {
                 FileName = pythonInterpreter,
@@ -26,6 +31,11 @@ public class GeminiAI
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))

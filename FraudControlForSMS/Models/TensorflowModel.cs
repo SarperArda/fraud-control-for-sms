@@ -13,6 +13,11 @@ public class TensorFlowModel
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
             var pythonScript = Env.GetString("TENSORFLOW_SCRIPT");
 
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or TensorFlow script are not set.");
+            }
+
             var psi = new ProcessStartInfo()
             {
                 FileName = pythonInterpreter,
@@ -25,6 +30,11 @@ public class TensorFlowModel
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
@@ -47,15 +57,14 @@ public class TensorFlowModel
                     var lines = output.Trim().Split(Environment.NewLine); // Split by new line characters
 
                     // Find the line containing "Spam Probability"
-                    string spamLine = lines.FirstOrDefault(line => line.StartsWith("Spam Probability: "));
+                    string? spamLine = lines.FirstOrDefault(line => line.StartsWith("Spam Probability: "));
 
                     if (spamLine == null)
                     {
                         throw new Exception("Could not find 'Spam Probability' in model output.");
                     }
 
-                    float probability;
-                    if (float.TryParse(spamLine.Split(':')[1].Trim(), out probability))
+                    if (float.TryParse(spamLine.Split(':')[1].Trim(), out float probability))
                     {
                         stopwatch.Stop();
                         Console.WriteLine("Total Execution Time of TensorFlow API: {0} ms", stopwatch.ElapsedMilliseconds);
