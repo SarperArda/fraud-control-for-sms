@@ -1,7 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using CsvHelper;
 using DotNetEnv;
 
@@ -16,8 +20,8 @@ class Program
         var tensorFlowModel = new TensorFlowModel();
         var ipqs = new IPQS();
 
-        string inputFilePath = Env.GetString("INPUT_FILE");
-        string outputFilePath = Env.GetString("OUTPUT_FILE");
+        string inputFilePath = Env.GetString("INPUT_FILE") ?? throw new ArgumentNullException("INPUT_FILE environment variable not found");
+        string outputFilePath = Env.GetString("OUTPUT_FILE") ?? throw new ArgumentNullException("OUTPUT_FILE environment variable not found");
 
         var cts = new CancellationTokenSource();
         var stopwatch = new Stopwatch();
@@ -36,7 +40,7 @@ class Program
                 var tensorFlowTask = tensorFlowModel.PredictAsync(new string[] { smsContent }, cts.Token);
 
                 var urlMatch = Regex.Match(smsContent, @"http[s]?://\S+");
-                Task<float> ipqsTask = null;
+                Task<float>? ipqsTask = null;
                 if (urlMatch.Success)
                 {
                     string url = urlMatch.Value;
@@ -100,7 +104,8 @@ class Program
 
     static int CalculateFinalScore(float geminiScore, float tensorFlowScore, float ipqsScore)
     {
-        if(ipqsScore == -1){
+        if (ipqsScore == -1)
+        {
             return (int)((geminiScore * 0.5) + (tensorFlowScore * 0.5));
         }
         return (int)((geminiScore * 0.4) + (tensorFlowScore * 0.4) + (ipqsScore * 0.2));

@@ -1,10 +1,9 @@
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using DotNetEnv;
 
-public class GeminiAI
+public class TensorFlowModel
 {
-    public async Task<float> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
+    public async Task<float> PredictAsync(string[] input, CancellationToken cancellationToken)
     {
         try
         {
@@ -12,7 +11,12 @@ public class GeminiAI
             Env.Load();
 
             var pythonInterpreter = Env.GetString("PYTHON_INTERPRETER");
-            var pythonScript = Env.GetString("GEMINI_SCRIPT");
+            var pythonScript = Env.GetString("TENSORFLOW_SCRIPT");
+
+            if (string.IsNullOrEmpty(pythonInterpreter) || string.IsNullOrEmpty(pythonScript))
+            {
+                throw new Exception("Environment variables for Python interpreter or TensorFlow script are not set.");
+            }
 
             var psi = new ProcessStartInfo()
             {
@@ -26,6 +30,11 @@ public class GeminiAI
 
             using (var process = Process.Start(psi))
             {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start the process.");
+                }
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
                 using (cancellationToken.Register(() => process.Kill()))
@@ -41,35 +50,36 @@ public class GeminiAI
                     {
                         // Handle errors
                         var error = await errorTask;
-                        throw new Exception($"Python script error: {error}");
+                        throw new Exception($"TensorFlow script error: {error}");
                     }
 
                     var output = await outputTask;
-                    output = output.Trim();
+                    var lines = output.Trim().Split(Environment.NewLine); // Split by new line characters
 
-                    // Use Regex to search for digits (0-9) and optional decimal point
-                    Match match = Regex.Match(output, @"\d+\.?\d*");
+                    // Find the line containing "Spam Probability"
+                    string? spamLine = lines.FirstOrDefault(line => line.StartsWith("Spam Probability: "));
 
-                    if (match.Success)
+                    if (spamLine == null)
                     {
-                        // Extract the matched group and convert to float
-                        float fraudProbability = float.Parse(match.Groups[0].Value);
+                        throw new Exception("Could not find 'Spam Probability' in model output.");
+                    }
+
+                    if (float.TryParse(spamLine.Split(':')[1].Trim(), out float probability))
+                    {
                         stopwatch.Stop();
-                         Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return fraudProbability;
+                        Console.WriteLine("Total Execution Time of TensorFlow API: {0} ms", stopwatch.ElapsedMilliseconds);
+                        return probability;
                     }
                     else
                     {
-                        stopwatch.Stop();
-                        Console.WriteLine("Total Execution Time of Gemini API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return 0.0f;
+                        throw new Exception("Failed to parse spam probability value.");
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error executing Python script: {ex.Message}");
+            throw new Exception($"Error executing TensorFlow script: {ex.Message}");
         }
     }
 }
