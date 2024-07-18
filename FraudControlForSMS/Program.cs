@@ -53,7 +53,7 @@ class Program
                 }
 
                 float geminiScore = await geminiTask;
-                float tensorFlowScore = await tensorFlowTask * 100;
+                float tensorFlowScore = (float)Math.Round(await tensorFlowTask * 100, 2);
                 float ipqsScore = ipqsTask != null ? await ipqsTask : -1;
 
                 if (geminiScore < 0 || tensorFlowScore < 0)
