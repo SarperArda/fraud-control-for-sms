@@ -59,7 +59,7 @@ public class TensorFlowModel
                     {
                         stopwatch.Stop();
                         Console.WriteLine("Total Execution Time of TensorFlow API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return probability;
+                        return (int) probability;
                     }
                     else
                     {

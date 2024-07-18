@@ -54,7 +54,7 @@ def train_sms_spam_model():
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     # Step 3: Model Training
-    model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+    model.fit(X_train, y_train, epochs=100, batch_size=64, validation_split=0.2)
 
     # Save the trained model
     model.save('sms_spam_model.h5')
@@ -90,4 +90,3 @@ if __name__ == "__main__":
             print(f"Spam Probability: {prediction}")
     else:
         print("Please provide an input message for prediction.")
-    
