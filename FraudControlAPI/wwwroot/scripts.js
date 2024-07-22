@@ -3,33 +3,41 @@ document.getElementById('uploadBtn').addEventListener('click', () => {
 });
 
 document.getElementById('csvFileInput').addEventListener('change', handleFileSelect);
-document.getElementById('downloadBtn').addEventListener('click', downloadCSV);
 
-let csvContent = '';
+let uploadedFile = null;
 
 function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (file && file.type === 'text/csv') {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            csvContent = e.target.result;
-            document.getElementById('downloadBtn').disabled = false;
-        };
-        reader.readAsText(file);
+    uploadedFile = event.target.files[0];
+    if (uploadedFile && uploadedFile.type === 'text/csv') {
+        uploadFile(uploadedFile);
     } else {
         alert('Please upload a valid CSV file.');
-        document.getElementById('downloadBtn').disabled = true;
+        uploadedFile = null;
     }
 }
 
-function downloadCSV() {
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'downloaded.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);  // Clean up the URL object
+function uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('http://localhost:5163/api/fraudcontrol/analyze', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
+        }
+        return response.blob(); // Get the response as a Blob
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'results.csv'; // Name the file to download
+        link.click(); // Trigger the download
+        URL.revokeObjectURL(url); // Clean up the URL object
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
