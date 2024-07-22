@@ -1,0 +1,2 @@
+Message,GeminiScore,TensorFlowScore,IPQSScore,OpenAIScore,FinalScore,Explanation
+Congratulations! You've won a $1000 gift card. Claim your prize now by clicking the link: http://bit.ly/win1000,100,100,100,100,100,"The final fraud/spam risk score is 100, which indicates a high risk level."
