@@ -19,6 +19,7 @@ class Program
         var geminiAI = new GeminiAI();
         var tensorFlowModel = new TensorFlowModel();
         var ipqs = new IPQS();
+        var openAI = new OpenAI();
 
         string inputFilePath = Env.GetString("INPUT_FILE") ?? throw new ArgumentNullException("INPUT_FILE environment variable not found");
         string outputFilePath = Env.GetString("OUTPUT_FILE") ?? throw new ArgumentNullException("OUTPUT_FILE environment variable not found");
@@ -37,6 +38,7 @@ class Program
             {
                 string smsContent = record.Message;
                 var geminiTask = geminiAI.ExecutePythonScriptAsync(new string[] { smsContent }, cts.Token);
+                var openAITask = openAI.ExecutePythonScriptAsync(new string[] { smsContent }, cts.Token);
                 var tensorFlowTask = tensorFlowModel.PredictAsync(new string[] { smsContent }, cts.Token);
 
                 var urlMatch = Regex.Match(smsContent, @"http[s]?://\S+");
@@ -49,31 +51,34 @@ class Program
 
                 if (ipqsTask != null)
                 {
-                    await Task.WhenAll(geminiTask, tensorFlowTask, ipqsTask);
+                    await Task.WhenAll(geminiTask, tensorFlowTask, ipqsTask,openAITask);
                 }
                 else
                 {
-                    await Task.WhenAll(geminiTask, tensorFlowTask);
+                    await Task.WhenAll(geminiTask, tensorFlowTask,openAITask);
                 }
 
                 float geminiScore = await geminiTask;
+                float openAIScore = await openAITask;
                 float tensorFlowScore = (float)Math.Round(await tensorFlowTask * 100, 2);
                 float ipqsScore = ipqsTask != null ? await ipqsTask : -1;
 
-                if (geminiScore < 0 || tensorFlowScore < 0)
+                if (geminiScore < 0 || tensorFlowScore < 0 || openAIScore < 0)
                 {
                     geminiScore = Math.Max(geminiScore, 0);
                     tensorFlowScore = Math.Max(tensorFlowScore, 0);
+                    openAIScore = Math.Max(openAIScore, 0);
                 }
-                if (geminiScore > 100 || tensorFlowScore > 100 || ipqsScore > 100)
+                if (geminiScore > 100 || tensorFlowScore > 100 || ipqsScore > 100 || openAIScore > 100)
                 {
                     geminiScore = Math.Min(geminiScore, 100);
                     tensorFlowScore = Math.Min(tensorFlowScore, 100);
                     ipqsScore = Math.Min(ipqsScore, 100);
+                    openAIScore = Math.Min(openAIScore, 100);
                 }
 
-                int finalScore = CalculateFinalScore(geminiScore, tensorFlowScore, ipqsScore);
-                string explanation = GenerateExplanation(geminiScore, tensorFlowScore, ipqsScore, finalScore);
+                int finalScore = CalculateFinalScore(geminiScore, tensorFlowScore, ipqsScore, openAIScore);
+                string explanation = GenerateExplanation(finalScore);
 
                 results.Add(new OutputRecord
                 {
@@ -81,6 +86,7 @@ class Program
                     GeminiScore = geminiScore,
                     TensorFlowScore = tensorFlowScore,
                     IPQSScore = ipqsScore,
+                    OpenAIScore = openAIScore,
                     FinalScore = finalScore,
                     Explanation = explanation
                 });
@@ -102,16 +108,16 @@ class Program
         }
     }
 
-    static int CalculateFinalScore(float geminiScore, float tensorFlowScore, float ipqsScore)
+    static int CalculateFinalScore(float geminiScore, float tensorFlowScore, float ipqsScore, float openAIScore)
     {
         if (ipqsScore == -1)
         {
-            return (int)((geminiScore * 0.5) + (tensorFlowScore * 0.5));
+            return (int)((geminiScore * 0.3) + (tensorFlowScore * 0.3) + (openAIScore * 0.5));
         }
-        return (int)((geminiScore * 0.4) + (tensorFlowScore * 0.4) + (ipqsScore * 0.2));
+        return (int)((geminiScore * 0.3) + (tensorFlowScore * 0.2) + (ipqsScore * 0.1) + (openAIScore * 0.4));
     }
 
-    static string GenerateExplanation(float geminiScore, float tensorFlowScore, float ipqsScore, int finalScore)
+    static string GenerateExplanation(int finalScore)
     {
         string riskLevel;
 
