@@ -1,0 +1,26 @@
+[
+    {
+        "message": "Congratulations! You've won a $1000 gift card. Click here to claim: http://fakeurl.com",
+        "geminiScore": 100,
+        "tensorFlowScore": 100,
+        "ipqsScore": 90,
+        "finalScore": 98,
+        "explanation": "The final fraud/spam risk score is 98, which indicates a high risk level."
+    },
+    {
+        "message": "URGENT: Your bank account has been compromised. Please visit http://fakebank.com to secure your account.",
+        "geminiScore": 0,
+        "tensorFlowScore": 99.98,
+        "ipqsScore": 75,
+        "finalScore": 54,
+        "explanation": "The final fraud/spam risk score is 54, which indicates a moderate risk level."
+    },
+    {
+        "message": "You are eligible for a free upgrade to our premium service. Call now at 1-800-FAKE-NUMBER.",
+        "geminiScore": 99,
+        "tensorFlowScore": 100,
+        "ipqsScore": -1,
+        "finalScore": 99,
+        "explanation": "The final fraud/spam risk score is 99, which indicates a high risk level."
+    }
+]
