@@ -17,6 +17,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import pickle
 
+# Define the path to save the model and tokenizer
+SAVE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+
 def train_sms_spam_model():
     # Step 1: Data Collection and Preprocessing
     data = pd.read_csv('sms.csv', encoding='utf-8')
@@ -36,7 +39,8 @@ def train_sms_spam_model():
     padded_sequences = pad_sequences(sequences, maxlen=100)
 
     # Save the tokenizer
-    with open('tokenizer.pickle', 'wb') as handle:
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    with open(os.path.join(SAVE_DIR, 'tokenizer.pickle'), 'wb') as handle:
         pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # Split data into training and testing sets
@@ -57,16 +61,16 @@ def train_sms_spam_model():
     model.fit(X_train, y_train, epochs=100, batch_size=64, validation_split=0.2)
 
     # Save the trained model
-    model.save('sms_spam_model.h5')
+    model.save(os.path.join(SAVE_DIR, 'sms_spam_model.h5'))
 
 def predict_sms_spam(input_message):
     # Check if the model file exists
-    if os.path.exists('sms_spam_model.h5') and os.path.exists('tokenizer.pickle'):
+    if os.path.exists(os.path.join(SAVE_DIR, 'sms_spam_model.h5')) and os.path.exists(os.path.join(SAVE_DIR, 'tokenizer.pickle')):
         # Load the trained model
-        model = tf.keras.models.load_model('sms_spam_model.h5')
+        model = tf.keras.models.load_model(os.path.join(SAVE_DIR, 'sms_spam_model.h5'))
 
         # Load the tokenizer
-        with open('tokenizer.pickle', 'rb') as handle:
+        with open(os.path.join(SAVE_DIR, 'tokenizer.pickle'), 'rb') as handle:
             tokenizer = pickle.load(handle)
 
         # Tokenize and pad the input message
@@ -77,13 +81,12 @@ def predict_sms_spam(input_message):
         prediction = model.predict(padded_sequence)[0][0]
         return prediction
     else:
-        print("Model file or tokenizer not found. Please train the model first.")
-        return None
+        train_sms_spam_model()
+        return predict_sms_spam(input_message)
 
 if __name__ == "__main__":
     # Train the SMS spam detection model
-    #train_sms_spam_model()
-    if not os.path.exists('sms_spam_model.h5') and not os.path.exists('tokenizer.pickle'):
+    if not os.path.exists(os.path.join(SAVE_DIR, 'sms_spam_model.h5')) and not os.path.exists(os.path.join(SAVE_DIR, 'tokenizer.pickle')):
         train_sms_spam_model()
     if len(sys.argv) > 1:
         input_message = sys.argv[1]
