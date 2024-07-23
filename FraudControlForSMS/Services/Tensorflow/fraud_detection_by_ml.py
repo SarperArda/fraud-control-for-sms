@@ -19,10 +19,10 @@ import pickle
 
 # Define the path to save the model and tokenizer
 SAVE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-
+CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'sms.csv'))
 def train_sms_spam_model():
     # Step 1: Data Collection and Preprocessing
-    data = pd.read_csv('sms.csv', encoding='utf-8')
+    data = pd.read_csv(CSV_PATH, encoding='utf-8')
     data = data[['label', 'message']]
 
     # Encode labels
