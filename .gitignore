@@ -17,11 +17,6 @@ VENV/
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Ignore TensorFlow model files
-*.ckpt
-*.pb
-*.h5
-
 # Ignore build and object files
 bin/
 obj/
@@ -109,6 +104,3 @@ pip-delete-this-directory.txt
 *.bak
 *.bkp
 *.tmp
-
-# Ignore the tokenizer file
-tokenizer.pickle

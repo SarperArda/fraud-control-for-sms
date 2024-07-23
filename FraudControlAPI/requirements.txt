@@ -1,0 +1,8 @@
+openai
+tensorflow
+dotenv
+google-generativeai
+pandas
+csvhelper
+scikit-learn
+requests
