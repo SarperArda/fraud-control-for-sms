@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  fraudcontrolapi:
+    image: fraudcontrolapi
+    ports:
+      - "5163:5163"
