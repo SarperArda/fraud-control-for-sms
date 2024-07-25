@@ -25,7 +25,7 @@ Before you begin, ensure you have the following installed:
 Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/your-username/fraud-control-for-sms.git
+git clone https://github.com/Sarperarda/fraud-control-for-sms.git
 cd fraud-control-for-sms
 ```
 
@@ -52,7 +52,7 @@ dotnet restore
 
 ### Create a `.env` File
 
-   In the root directory of your project, create a `.env` file. Obtain API keys individually from https://ai.google.dev and https://www.ipqualityscore.com/documentation/overview:
+   In the root directory of your project, create a `.env` file. Obtain API keys individually from https://ai.google.dev , https://platform.openai.com/docs/overview and https://www.ipqualityscore.com/documentation/overview:
 
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
@@ -61,6 +61,8 @@ dotnet restore
    GEMINI_SCRIPT=path_to_your_gemini_script
    TENSORFLOW_SCRIPT=path_to_your_tensorflow_script
    IPQS_SCRIPT=path_to_your_ipqs_script
+   OPENAI_SCRIPT=path_to_your_openai_script
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
 
 ## Usage
@@ -86,9 +88,13 @@ This will start the Fraud Control for SMS service. The application will analyze 
 
 ## Detailed Explanation of the Program
 
+### OpenAI Model
+
+The OpenAI model is a generative AI model that analyzes the content of SMS messages to detect any suspicious or fraud-like patterns. It provides a fraud probability score based on the input message content.
+
 ### Gemini AI Model
 
-The Gemini AI model is a generative AI model that analyzes the content of SMS messages to detect any suspicious or spam-like patterns. It provides a fraud probability score based on the input message content.
+The Gemini AI model is a generative AI model that analyzes the content of SMS messages to detect any suspicious or fraud-like patterns. It provides a fraud probability score based on the input message content.
 
 ### TensorFlow Model
 
