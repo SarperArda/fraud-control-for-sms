@@ -115,10 +115,22 @@ dotnet restore
 
 ### Configuration
 
-- Copy the `.env.example` file to `.env` and update the environment variables as needed:
-  ```bash
-  cp .env.example .env
-  ```
+1. **Create a `.env` File**
+
+   In the root directory of your project, create a `.env` file with the following content:
+
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   IP_QUALITY_SCORE_API_KEY=your_ip_quality_score_api_key_here
+   PYTHON_INTERPRETER=path_to_your_python_executable
+   GEMINI_SCRIPT=path_to_your_gemini_script
+   TENSORFLOW_SCRIPT=path_to_your_tensorflow_script
+   IPQS_SCRIPT=path_to_your_ipqs_script
+   OPENAI_SCRIPT=path_to_your_openai_script
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+   Make sure to replace the placeholder values with your actual API keys and script paths.
 
 ### Running the Application
 
@@ -176,4 +188,4 @@ Feel free to submit issues or pull requests. Ensure to follow coding standards a
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
+--- 
