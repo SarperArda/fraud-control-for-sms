@@ -2,7 +2,7 @@
     Description: This script is used to interact with the OpenAI API using the latest client library.
     Author: Sarper Arda BAKIR
     Date: 08-07-2024
-    Version: 1.1
+    Version: 1.2
 """
 
 # Import the required libraries
@@ -32,7 +32,7 @@ client = OpenAI(api_key=API_KEY)
 def generate_openai_response(prompt):
     try:
         # Adjust the prompt to include the specific question
-        full_prompt = f"{prompt} Is this message fraud? Write only percentage of fraud."
+        full_prompt = f"{prompt} Bu sms örneği Fraud mu? Sadece yüzdeyi yaz. Ayrıca, bu sms hangi kategoriye ait? Eticaret,Kampanya, Hukuki, OTP, Finans, Diğer.Vereceğin cevap yalnızca '%80 E-ticaret' şeklinde olmalıdır.Fraud kelimesini ceavpta kullanma."
 
         # Create the completion request to OpenAI with streaming
         stream = client.chat.completions.create(
@@ -56,13 +56,13 @@ if __name__ == "__main__":
         test_message = sys.argv[1]
         result = generate_openai_response(test_message)
         print(f"Message: {test_message}")
-        print(f"Fraudulent: {result}")
+        print(f"Response: {result}")
     else:
         print("Prompt is not provided. Please provide a prompt as an argument.")
 '''
 if __name__ == "__main__":
-    test_message = "Congratulations! You've won a free cruise. Call this number to claim your prize."
+    test_message = "Değerli Müşterimiz; Koton Ak Yatırım Eş Liderliğinde halka arz ediliyor. 30 Nisan/ 2-3 Mayıs tarihlerinde 30,50 TL fiyat ile gerçekleşecek Koton halka arzına katılmak için hemen tıklayın. https://akyatirim.com.tr/halka-arz-talep SMS listesinden çıkmak için ILT IPTAL yazıp 4607'ye gönderebilirsiniz. Mersis:0011007783700015  B040"
     result = generate_openai_response(test_message)
     print(f"Message: {test_message}")
-    print(f"Fraudulent: {result}")
+    print(f"Response: {result}")
 '''

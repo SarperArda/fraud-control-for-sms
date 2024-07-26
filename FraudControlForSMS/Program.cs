@@ -59,7 +59,7 @@ class Program
                 }
 
                 float geminiScore = await geminiTask;
-                float openAIScore = await openAITask;
+                var (openAIScore,category) = await openAITask;
                 float tensorFlowScore = (float)Math.Round(await tensorFlowTask * 100, 2);
                 float ipqsScore = ipqsTask != null ? await ipqsTask : -1;
 
@@ -88,6 +88,7 @@ class Program
                     IPQSScore = ipqsScore,
                     OpenAIScore = openAIScore,
                     FinalScore = finalScore,
+                    Category = category,
                     Explanation = explanation
                 });
             }).ToArray();

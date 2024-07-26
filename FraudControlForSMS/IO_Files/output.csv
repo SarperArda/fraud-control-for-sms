@@ -1,2 +1,3 @@
-Message,GeminiScore,TensorFlowScore,IPQSScore,OpenAIScore,FinalScore,Explanation
-Congratulations! You've won a $1000 gift card. Claim your prize now by clicking the link: http://bit.ly/win1000,100,100,100,100,100,"The final fraud/spam risk score is 100, which indicates a high risk level."
+Message,GeminiScore,TensorFlowScore,IPQSScore,OpenAIScore,FinalScore,Category,Explanation
+"Değerli Müşterimiz; Koton Ak Yatırım Eş Liderliğinde halka arz ediliyor. 30 Nisan/ 2-3 Mayıs tarihlerinde 30,50 TL fiyat ile gerçekleşecek Koton halka arzına katılmak için hemen tıklayın. https://akyatirim.com.tr/halka-arz-talep SMS listesinden çıkmak için ILT IPTAL yazıp 4607'ye gönderebilirsiniz. Mersis:0011007783700015  B040",90,88.41,-1,0,53,finans,"The final fraud/spam risk score is 53, which indicates a moderate risk level."
+Size özel 1 bilet alana 1 bilet bedava (1+1) kampanyası tanımladık. Yüzyüzeyken Konuşuruz yarın Atilim Üniversitesi Amfi Tiyatro salonuna geliyor!SMS IPTAL Mersis No: 0171064698600001 https://p.s-m-s.red/x/xntYLG B002,90,100,-1,0,57,kampanya,"The final fraud/spam risk score is 57, which indicates a moderate risk level."

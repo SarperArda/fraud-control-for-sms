@@ -6,5 +6,6 @@ public class OutputRecord
     public float IPQSScore { get; set; }
     public float OpenAIScore { get; set; }
     public int FinalScore { get; set; }
+    public string Category { get; set; } = string.Empty;
     public string Explanation { get; set; } = string.Empty;
 }

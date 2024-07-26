@@ -1,10 +1,19 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DotNetEnv;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
 
 public class OpenAI
 {
-    public async Task<float> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
+    // Define the desired categories
+    private readonly HashSet<string> _desiredCategories = new HashSet<string> 
+    { 
+        "eticaret","kampanya", "hukuki", "finans", "otp", "diğer" 
+    };
+
+    public async Task<(float, string)> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)
     {
         try
         {
@@ -57,22 +66,34 @@ public class OpenAI
                     var output = await outputTask;
                     output = output.Trim();
 
-                    // Use Regex to search for digits (0-9) and optional decimal point
-                    Match match = Regex.Match(output, @"\d+\.?\d*");
+                    // Improved regex to capture percentage and category
+                    var match = Regex.Match(output, @"%(\d+\.?\d*)\s+(\w+[\w\s]*)");
 
                     if (match.Success)
                     {
-                        // Extract the matched group and convert to float
-                        float fraudProbability = float.Parse(match.Groups[0].Value);
-                        stopwatch.Stop();
-                        Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return fraudProbability;
+                        // Extract the matched groups and convert to float and string
+                        float fraudProbability = float.Parse(match.Groups[1].Value);
+                        string category = match.Groups[2].Value.Trim().ToLower(); // Ensure case insensitivity
+
+                        // Check if the category is in the desired categories
+                        if (_desiredCategories.Contains(category))
+                        {
+                            stopwatch.Stop();
+                            Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
+                            return (fraudProbability, category);
+                        }
+                        else
+                        {
+                            stopwatch.Stop();
+                            Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
+                            return (fraudProbability, output); // For non-matching categories
+                        }
                     }
                     else
                     {
                         stopwatch.Stop();
                         Console.WriteLine("Total Execution Time of OpenAI API: {0} ms", stopwatch.ElapsedMilliseconds);
-                        return 0.0f;
+                        return (0.0f, output); // When output does not match the expected format
                     }
                 }
             }
