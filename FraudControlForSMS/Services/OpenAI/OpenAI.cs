@@ -10,7 +10,7 @@ public class OpenAI
     // Define the desired categories
     private readonly HashSet<string> _desiredCategories = new HashSet<string> 
     { 
-        "eticaret","kampanya", "hukuki", "finans", "otp", "diğer" 
+        "E-ticaret","kampanya", "hukuki", "finans", "otp", "diğer" 
     };
 
     public async Task<(float, string)> ExecutePythonScriptAsync(string[] input, CancellationToken cancellationToken)

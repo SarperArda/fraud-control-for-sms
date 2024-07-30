@@ -113,9 +113,9 @@ class Program
     {
         if (ipqsScore == -1)
         {
-            return (int)((geminiScore * 0.3) + (tensorFlowScore * 0.3) + (openAIScore * 0.5));
+            return (int)((geminiScore * 0.2) + (tensorFlowScore * 0.3) + (openAIScore * 0.5));
         }
-        return (int)((geminiScore * 0.3) + (tensorFlowScore * 0.2) + (ipqsScore * 0.1) + (openAIScore * 0.4));
+        return (int)((geminiScore * 0.15) + (tensorFlowScore * 0.15) + (ipqsScore * 0.2) + (openAIScore * 0.5));
     }
 
     static string GenerateExplanation(int finalScore)

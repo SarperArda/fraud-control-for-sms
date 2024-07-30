@@ -32,7 +32,7 @@ client = OpenAI(api_key=API_KEY)
 def generate_openai_response(prompt):
     try:
         # Adjust the prompt to include the specific question
-        full_prompt = f"{prompt} Bu sms örneği Fraud mu? Sadece yüzdeyi yaz. Ayrıca, bu sms hangi kategoriye ait? Eticaret,Kampanya, Hukuki, OTP, Finans, Diğer.Vereceğin cevap yalnızca '%80 E-ticaret' şeklinde olmalıdır.Fraud kelimesini ceavpta kullanma."
+        full_prompt = f"{prompt} Bu sms örneği Fraud mu? Sadece yüzdeyi yaz. Ayrıca, bu sms hangi kategoriye ait? Kampanya, Hukuki, OTP, Finans, Diğer.Vereceğin cevap yalnızca '%80 Kampanya' şeklinde olmalıdır.Fraud kelimesini ceavpta kullanma."
 
         # Create the completion request to OpenAI with streaming
         stream = client.chat.completions.create(
